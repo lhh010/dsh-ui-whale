@@ -21,7 +21,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-ui-whale）
-dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.14'
+dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.15'
 
 # 方式二：本地 link（开发）
 git clone https://github.com/lhh010/dsh-ui-whale.git
@@ -44,7 +44,7 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-ui-whale 插件（DSH 会话标题栏像素鲸鱼伙伴），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.14'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.15'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
@@ -64,7 +64,8 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 | `v0.3.1` | `snapshots/20260806T160212Z`（snapshot0806） | 睡觉 Z 改 5 帧循环 `0-1-2-3-4-5-1-…`；尾巴加一帧改 `0-1-2-3-4-3-2-1-0` |
 | `v0.3.2` | `snapshots/20260806T160212Z`（snapshot0806） | 修正睡觉 Z 浮动轨迹（重新定位 睡觉2~5 的 Z 位置） |
 | `v0.3.3` | `snapshots/20260810T155924Z`（snapshot0810） | 兼容性构建：客户端插件元数据从顶层 `dshClient` 迁移为嵌套 `dsh.client`（0810 的 ClientModuleHostService 只读该字段；顶层 `dshClient` 被静默忽略），inject/platform 原样保留 |
-| `v0.3.14` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1` | 当前版本：声明支持 0.1.3-alpha.1（npm 未发布，源码宿主实机验证；0.1.3 破坏性变更集中在 host/session 侧，client 插件面零代码差异；typecheck/build/单测全绿） |
+| `v0.3.15` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`、`0.1.3-alpha.2` | 当前版本：声明支持 0.1.3-alpha.2（npm 已发布，钉版本实机验证；alpha.2 改动全在 pi-ai/Web 顶栏/子代理消息/host 面，client 插件面零代码差异；typecheck/build/单测全绿） |
+| `v0.3.14` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1` | 声明支持 0.1.3-alpha.1（npm 未发布，源码宿主实机验证；0.1.3 破坏性变更集中在 host/session 侧，client 插件面零代码差异；typecheck/build/单测全绿） |
 | `v0.3.13` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1` | 声明支持 rc.1（alpha.5→rc.1 为纯版本号提交，零代码差异；实机 rc.1 验证通过） |
 | `v0.3.12` | `dsh-v0.1.2-alpha.1`~`alpha.5` | 声明支持 alpha.5（typecheck/build 全绿；alpha.5 为纯 bug 修复，无 API 变更） |
 | `v0.3.11` | `dsh-v0.1.2-alpha.1`~`alpha.4` | 声明支持 alpha.4 + 演示 Demo 前置 |
@@ -81,7 +82,7 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 > **alpha 发版兼容**：兼容 `dsh-v0.1.2-alpha.1`（GitHub tag `dsh-v0.1.2-alpha.1`，源码构建安装，不发布 npm；v0.3.5 迁移并验证：0.1.2-alpha.1 移除了 `@deepseek-ai/dsh-client-runtime` 客户端包，`ClientContext` 改从 `@deepseek-ai/cordis` 导入、`ConversationSnapshot` 重构为 views 架构（旧 `nodes`/`partial`/`runningCalls` 等字段移到 `ChatSnapshot.legacy` 兼容投影）。本插件已在 0.1.2-alpha.1 源码基线上重写数据来源（`useSession` 读 Session 生命周期、`useConversation` 经 `views.get('chat').legacy` 读流式/工具状态），typecheck、34 个单测与构建全绿，注册改用 `ctx.slots.inject('conversation.session.header.actions', …)` 新范式）。
 本插件 v0.3.8 起内置**兼容性自诊断**：apply 时探测所需客户端 API,不满足时不再崩溃,而是在页面右下角渲染修复指引横幅(点击可关闭),提示升级 DSH 或更新插件。
 
-> git 依赖方式固定 tag（公开镜像，推荐）：`pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.14'`（或 `github:lhh010/dsh-ui-whale`；历史版本：0810/0811 用户用 `#v0.3.3`，0806~0809 用户用 `#v0.3.2`，0805 用户用 `#v0.1.0`）。
+> git 依赖方式固定 tag（公开镜像，推荐）：`pnpm add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.15'`（或 `github:lhh010/dsh-ui-whale`；历史版本：0810/0811 用户用 `#v0.3.3`，0806~0809 用户用 `#v0.3.2`，0805 用户用 `#v0.1.0`）。
 
 ## 0809 兼容要点（snapshot0809，实机验证）
 
