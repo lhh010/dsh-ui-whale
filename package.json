@@ -1,6 +1,6 @@
 {
   "name": "@dsh-external/dsh-ui-whale",
-  "version": "0.3.15",
+  "version": "0.3.16",
   "private": true,
   "type": "module",
   "description": "DSH Web UI 像素鲸鱼伙伴插件：会话标题栏常驻，平时眨眼/偶尔摆尾/动胸鳍，思考运行时持续动起来，回合完成头顶喷水，点击冒爱心，零核心改动。",
