@@ -166,4 +166,5 @@ pnpm test           # vitest（帧一致性 / 动画序列 / 插件注册）
 
 ## License
 
+`v0.3.18`（默认） | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.5-rc.1` | 声明支持 0.1.5-rc.1（npm 已发布，钉版本实机验证；rc.1 为 0.1.5 系列首个候选版本，client 插件面零代码差异；typecheck/build/34 单测全绿，启动清单确认加载） |
 BSD-3-Clause（见 [LICENSE](LICENSE)）。
