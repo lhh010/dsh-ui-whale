@@ -58,12 +58,6 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 
 | 插件版本 | DSH 快照 | 说明 |
 | --- | --- | --- |
-| `v0.1.0` | `snapshots/20260805T134133Z`（snapshot0805） | 旧构建，按旧安装方式（`~/.dsh/config.yaml` + `pnpm add -w link:`） |
-| `v0.2.0` | `snapshots/20260806T160212Z`（snapshot0806） | 0806 新构建，按新安装方式 |
-| `v0.3.0` | `snapshots/20260806T160212Z`（snapshot0806） | 0806 构建 + 睡觉动画（连续空闲 10 s 入睡） |
-| `v0.3.1` | `snapshots/20260806T160212Z`（snapshot0806） | 睡觉 Z 改 5 帧循环 `0-1-2-3-4-5-1-…`；尾巴加一帧改 `0-1-2-3-4-3-2-1-0` |
-| `v0.3.2` | `snapshots/20260806T160212Z`（snapshot0806） | 修正睡觉 Z 浮动轨迹（重新定位 睡觉2~5 的 Z 位置） |
-| `v0.3.3` | `snapshots/20260810T155924Z`（snapshot0810） | 兼容性构建：客户端插件元数据从顶层 `dshClient` 迁移为嵌套 `dsh.client`（0810 的 ClientModuleHostService 只读该字段；顶层 `dshClient` 被静默忽略），inject/platform 原样保留 |
 | `v0.3.18`（默认） | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.5-rc.2` | 声明支持 0.1.5-rc.1~rc.2（npm 已发布，钉版本实机验证；rc.1 为 0.1.5 系列首个候选版本，client 插件面零代码差异；typecheck/build/34 单测全绿，热挂载实机验证） |
 | `v0.3.17`（当前版本） | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.5-alpha.2` | 声明支持 0.1.5-alpha.2（npm 已发布，钉版本实机验证；alpha.2 改动为 Sidebar 文档预览、模型文件交付、minimal 默认工具调整与 `fs-ext` 安装修复，client 插件面零代码差异；typecheck/build/34 单测全绿，启动清单确认加载） |
 | `v0.3.16` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.5-alpha.1` | 声明支持 0.1.5-alpha.1（npm 已发布，钉版本实机验证；0.1.5 改动在会话格式 V3 / ctx.agent 移除 / 宿主 bundle 服务路由 `/plugins/??`，client 插件面零代码差异；typecheck/build/单测全绿，启动清单确认加载） |
@@ -77,6 +71,12 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 | `v0.3.8` | `dsh-v0.1.2-alpha.1`（GitHub tag，源码构建安装） | 迁移到 0.1.2-alpha.1 客户端 API（views/legacy 投影 + ctx.slots.inject），带兼容自诊断横幅 |
 | `v0.3.5` | `dsh-v0.1.2-alpha.1` | 兼容性自诊断横幅引入 |
 | `v0.3.4` | npm `@deepseek-ai/dsh@0.1.1-rc.1` | 0.1.1-rc.1 实机 boot 验证通过（boot 清单 + client.js 200），依赖的槽位/服务不变 |
+| `v0.3.3` | `snapshots/20260810T155924Z`（snapshot0810） | 兼容性构建：客户端插件元数据从顶层 `dshClient` 迁移为嵌套 `dsh.client`（0810 的 ClientModuleHostService 只读该字段；顶层 `dshClient` 被静默忽略），inject/platform 原样保留 |
+| `v0.3.2` | `snapshots/20260806T160212Z`（snapshot0806） | 修正睡觉 Z 浮动轨迹（重新定位 睡觉2~5 的 Z 位置） |
+| `v0.3.1` | `snapshots/20260806T160212Z`（snapshot0806） | 睡觉 Z 改 5 帧循环 `0-1-2-3-4-5-1-…`；尾巴加一帧改 `0-1-2-3-4-3-2-1-0` |
+| `v0.3.0` | `snapshots/20260806T160212Z`（snapshot0806） | 0806 构建 + 睡觉动画（连续空闲 10 s 入睡） |
+| `v0.2.0` | `snapshots/20260806T160212Z`（snapshot0806） | 0806 新构建，按新安装方式 |
+| `v0.1.0` | `snapshots/20260805T134133Z`（snapshot0805） | 旧构建，按旧安装方式（`~/.dsh/config.yaml` + `pnpm add -w link:`） |
 
 > **兼容性说明**：上表构建均基于 snapshot0806 开发，同时兼容 snapshot0807（`snapshots/20260807T130646Z`）、snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）、snapshot0810（`snapshots/20260810T155924Z`）、snapshot0811（`snapshots/20260811T152241Z`）与最终快照 snapshot0812（`snapshots/20260812T172954Z-final`）——0807~0812 用户直接安装默认版本（`v0.3.8`）即可（0811 与 0812 实机 boot 验证通过，见下）。
 
