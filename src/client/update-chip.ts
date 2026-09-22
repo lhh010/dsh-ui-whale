@@ -6,18 +6,25 @@
  * update prompts never overlap each other. When the version check fails
  * (network unreachable), a neutral gray chip with a retry button shows instead.
  */
-import { PLUGIN_VERSION, fetchLatestTag, compareSemver, runUpdate, updatePrompt, UPDATE_ID, MIRROR, PACKAGE_SPEC } from './update-check.ts'
+import { PLUGIN_VERSION, fetchUpdateInfo, decideUpdate, runUpdate, updatePrompt, UPDATE_ID, MIRROR, PACKAGE_SPEC, type UpdateNotice } from './update-check.ts'
 
 let started = false
 
 export function startUpdateChip(): void {
   if (started) return
   started = true
-  void fetchLatestTag().then((tag) => {
-    if (tag === undefined) { renderOfflineChip(); return }
-    if (compareSemver(tag, PLUGIN_VERSION) <= 0) { renderCurrentChip(tag); return }
-    renderChip(tag)
-  })
+  void checkOnce()
+}
+
+async function checkOnce(): Promise<UpdateNotice | undefined> {
+  const info = await fetchUpdateInfo()
+  if (info === undefined) { renderOfflineChip(); return undefined }
+  const notice = decideUpdate(PLUGIN_VERSION, info)
+  if (notice.kind === 'current') { renderCurrentChip(notice.tag); return notice }
+  if (notice.kind === 'available') { renderChip(notice.tag); return notice }
+  if (notice.kind === 'partial') { renderChip(notice.tag, notice); return notice }
+  renderBlockedChip(notice.tag, notice.dshVersion)
+  return notice
 }
 
 /** Reflow every visible update chip into a non-overlapping vertical column. */
@@ -32,16 +39,16 @@ function relayout(): void {
 
 const LABEL = '鲸鱼'
 
-function renderChip(tag: string): void {
+function renderChip(tag: string, partial?: { readonly blocked: string; readonly dshVersion: string }): void {
   if (document.querySelector(`[data-update-chip="${UPDATE_ID}"]`) !== null) return
   const el = document.createElement('div')
   el.setAttribute('data-update-chip', UPDATE_ID)
   el.setAttribute('role', 'button')
-  el.setAttribute('title', `更新到 ${tag}`)
+  el.setAttribute('title', partial === undefined ? `更新到 ${tag}` : `更新到 ${tag}（另有 ${partial.blocked} 需要更高 DSH 版本，当前 DSH ${partial.dshVersion} 不支持）`)
   el.style.cssText = 'position:fixed;left:12px;z-index:2147483000;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #4a7dff;border-radius:10px;background:#1e2430;color:#cfe0ff;font:12px/1.4 system-ui,Segoe UI,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35);'
   const label = document.createElement('span')
   label.style.cssText = 'pointer-events:none;'
-  label.textContent = `⟳ ${LABEL} 新版本 ${tag} 可用，点击更新`
+  label.textContent = partial === undefined ? `⟳ ${LABEL} 新版本 ${tag} 可用，点击更新` : `⟳ ${LABEL} 新版本 ${tag} 可用（${partial.blocked} 需更高 DSH）`
   const close = document.createElement('button')
   close.textContent = '×'
   close.setAttribute('aria-label', '关闭')
@@ -104,16 +111,38 @@ function renderOfflineChip(): void {
     if (retrying) return
     retrying = true
     label.textContent = '版本检查中…'
-    void fetchLatestTag().then((tag) => {
+    void checkOnce().then((notice) => {
       retrying = false
-      if (tag === undefined) { label.textContent = `⚠ ${LABEL} 仍无法查询新版本`; return }
+      if (notice === undefined) { label.textContent = `⚠ ${LABEL} 仍无法查询新版本`; return }
       el.remove()
       relayout()
-      if (compareSemver(tag, PLUGIN_VERSION) > 0) renderChip(tag)
     })
   }
   retry.addEventListener('click', (event) => { event.stopPropagation(); retryOnce() })
   el.addEventListener('click', (event) => { if ((event.target as HTMLElement).closest('button') === null) retryOnce() })
+  document.body.appendChild(el)
+  relayout()
+}
+
+/** Amber informational chip: the newest release needs a DSH version this host does not run. */
+function renderBlockedChip(tag: string, dshVersion: string): void {
+  if (document.querySelector(`[data-update-chip="${UPDATE_ID}"]`) !== null) return
+  const el = document.createElement('div')
+  el.setAttribute('data-update-chip', UPDATE_ID)
+  el.setAttribute('title', `新版本 ${tag} 支持更高的 DSH 版本，但不支持当前 DSH ${dshVersion}；升级 DSH 后再更新插件`)
+  el.style.cssText = 'position:fixed;left:12px;z-index:2147483000;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #8a6d2f;border-radius:10px;background:#2d2718;color:#e8cf9a;font:12px/1.4 system-ui,Segoe UI,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.3);'
+  const label = document.createElement('span')
+  label.style.cssText = 'pointer-events:none;'
+  label.textContent = `⧗ ${LABEL} 新版本 ${tag} 支持更高 DSH 版本，当前 DSH ${dshVersion} 暂不可用`
+  const close = document.createElement('button')
+  close.textContent = '×'
+  close.setAttribute('aria-label', '关闭')
+  close.title = '关闭'
+  close.style.cssText = 'pointer-events:auto;border:0;background:transparent;color:#b7a677;font:inherit;cursor:pointer;padding:0 2px;line-height:1;'
+  close.addEventListener('click', (event) => { event.stopPropagation(); el.remove(); relayout() })
+  el.appendChild(label)
+  el.appendChild(close)
+  el.addEventListener('pointerdown', (event) => { event.stopPropagation() })
   document.body.appendChild(el)
   relayout()
 }

@@ -18,8 +18,23 @@ export function compareSemver(a: string, b: string): number {
   return (pa[0]! - pb[0]!) || (pa[1]! - pb[1]!) || (pa[2]! - pb[2]!)
 }
 
-async function latestFromHost(): Promise<string | undefined> {
-  try { const res = await fetch(`/${UPDATE_ID}/latest`, { method: 'GET', signal: AbortSignal.timeout(9000) }); if (!res.ok) return undefined; const b: unknown = await res.json(); const latest = (b as { latest?: string }).latest; return typeof latest === 'string' && /^v\d+\.\d+\.\d+$/.test(latest) ? latest : undefined } catch { return undefined }
+interface HostLatest { readonly latest?: string | undefined; readonly dshVersion?: string | undefined; readonly latestSupported?: string | undefined; readonly compat?: boolean | undefined }
+
+async function latestFromHost(): Promise<HostLatest | undefined> {
+  try {
+    const res = await fetch(`/${UPDATE_ID}/latest`, { method: 'GET', signal: AbortSignal.timeout(9000) })
+    if (!res.ok) return undefined
+    const b: unknown = await res.json()
+    const raw = b as { latest?: unknown; dshVersion?: unknown; latestSupported?: unknown; compat?: unknown }
+    const latest = typeof raw.latest === 'string' && /^v\d+\.\d+\.\d+$/.test(raw.latest) ? raw.latest : undefined
+    if (latest === undefined) return undefined
+    return {
+      latest,
+      dshVersion: typeof raw.dshVersion === 'string' && raw.dshVersion !== '' ? raw.dshVersion : undefined,
+      latestSupported: typeof raw.latestSupported === 'string' && /^v\d+\.\d+\.\d+$/.test(raw.latestSupported) ? raw.latestSupported : undefined,
+      compat: raw.compat === true,
+    }
+  } catch { return undefined }
 }
 async function latestFromTags(): Promise<string | undefined> {
   try { const res = await fetch(`https://api.github.com/repos/${MIRROR}/tags?per_page=10`, { headers: { accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(8000) }); if (!res.ok) return undefined; const tags: unknown = await res.json(); if (!Array.isArray(tags)) return undefined; const stable = tags.map((e) => (e as GithubTag).name).filter((n): n is string => typeof n === 'string' && /^v\d+\.\d+\.\d+$/.test(n)); if (stable.length === 0) return undefined; return stable.reduce((newest, t) => (compareSemver(t, newest) > 0 ? t : newest)) } catch { return undefined }
@@ -27,11 +42,49 @@ async function latestFromTags(): Promise<string | undefined> {
 async function latestFromRaw(): Promise<string | undefined> {
   try { const res = await fetch(`https://raw.githubusercontent.com/${MIRROR}/main/package.json`, { signal: AbortSignal.timeout(8000) }); if (!res.ok) return undefined; const pkg: unknown = await res.json(); const version = (pkg as { version?: unknown }).version; return typeof version === 'string' && /^\d+\.\d+\.\d+$/.test(version) ? `v${version}` : undefined } catch { return undefined }
 }
-export async function fetchLatestTag(): Promise<string | undefined> {
+export interface UpdateInfo {
+  readonly latest: string
+  /** Running DSH version; undefined when the host endpoint did not report it. */
+  readonly dshVersion?: string | undefined
+  /** Newest tag whose compatibility data covers dshVersion; undefined when unknown. */
+  readonly latestSupported?: string | undefined
+  /** True when the compatibility map was reachable and parsed. */
+  readonly compat?: boolean | undefined
+}
+
+export async function fetchUpdateInfo(): Promise<UpdateInfo | undefined> {
   // All sources race in parallel: total latency is the slowest one instead of
   // their sum, so an offline machine shows the failure chip within seconds.
+  // Only the host endpoint carries the DSH-version gating fields; the tag/raw
+  // fallbacks degrade to the legacy plain-update behavior.
   const [host, tags, raw] = await Promise.all([latestFromHost(), latestFromTags(), latestFromRaw()])
-  return host ?? tags ?? raw
+  const latest = host?.latest ?? tags ?? raw
+  if (latest === undefined) return undefined
+  return { latest, dshVersion: host?.dshVersion, latestSupported: host?.latestSupported, compat: host?.compat }
+}
+
+export type UpdateNotice =
+  | { readonly kind: 'current'; readonly tag: string }
+  | { readonly kind: 'available'; readonly tag: string }
+  | { readonly kind: 'partial'; readonly tag: string; readonly blocked: string; readonly dshVersion: string }
+  | { readonly kind: 'blocked'; readonly tag: string; readonly dshVersion: string }
+
+/** Decide the update-chip message from the local version and the gated remote info. */
+export function decideUpdate(local: string, info: UpdateInfo): UpdateNotice {
+  const { latest } = info
+  if (compareSemver(latest, local) <= 0) return { kind: 'current', tag: latest }
+  const dshVersion = info.dshVersion
+  if (dshVersion === undefined || info.compat !== true) return { kind: 'available', tag: latest }
+  // Newest release this DSH version can run; undefined means the map knows no
+  // tag (newer than nothing) that supports the running DSH version.
+  const supported = info.latestSupported !== undefined && compareSemver(info.latestSupported, local) > 0 ? info.latestSupported : undefined
+  if (supported === undefined) return { kind: 'blocked', tag: latest, dshVersion }
+  if (compareSemver(supported, latest) >= 0) return { kind: 'available', tag: latest }
+  return { kind: 'partial', tag: supported, blocked: latest, dshVersion }
+}
+
+export async function fetchLatestTag(): Promise<string | undefined> {
+  return (await fetchUpdateInfo())?.latest
 }
 export function updatePrompt(tag: string): string {
   return [

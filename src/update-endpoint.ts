@@ -10,7 +10,7 @@ import { execFile, spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { realpathSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
 import type {} from '@deepseek-ai/dsh-host-webserver'
@@ -56,6 +56,66 @@ function latestFromGit(): Promise<string | undefined> {
   return latestInflight
 }
 
+const COMPAT_URL = `https://raw.githubusercontent.com/${MIRROR}/main/compatibility.json`
+const COMPAT_TTL_MS = 300_000
+const COMPAT_TIMEOUT_MS = 8_000
+
+/**
+ * The running DSH version, read once from the manifest next to the launcher
+ * script (process.argv[1] is .../dsh/lib/bin.js for a built install and
+ * .../dsh/src/bin.ts for a source launch; both sit one directory below the
+ * package root). undefined when the layout does not match.
+ */
+let dshVersionValue: string | undefined
+let dshVersionTried = false
+function detectDshVersion(): string | undefined {
+  if (dshVersionTried) return dshVersionValue
+  dshVersionTried = true
+  try {
+    const argv1 = process.argv[1]
+    if (typeof argv1 === 'string' && argv1 !== '') {
+      const manifest: unknown = JSON.parse(readFileSync(resolve(dirname(argv1), '..', 'package.json'), 'utf8'))
+      const name = (manifest as { name?: unknown }).name
+      const version = (manifest as { version?: unknown }).version
+      if (name === '@deepseek-ai/dsh' && typeof version === 'string' && version !== '') dshVersionValue = version
+    }
+  } catch { /* launched outside the dsh package layout */ }
+  return dshVersionValue
+}
+
+/**
+ * Plugin tag -> supported DSH versions, from the repository's
+ * compatibility.json (raw CDN; minutes of lag are fine for an update check).
+ * Failures are cached too, so an offline machine answers instantly.
+ */
+let compatCache: { at: number; map: Map<string, string[]> | undefined } | undefined
+let compatInflight: Promise<Map<string, string[]> | undefined> | undefined
+
+function parseCompat(value: unknown): Map<string, string[]> | undefined {
+  if (typeof value !== 'object' || value === null) return undefined
+  const schema = (value as { schema?: unknown }).schema
+  const versions = (value as { versions?: unknown }).versions
+  if (schema !== 1 || typeof versions !== 'object' || versions === null) return undefined
+  const map = new Map<string, string[]>()
+  for (const [tag, entry] of Object.entries(versions as Record<string, unknown>)) {
+    if (!/^v\d+\.\d+\.\d+$/.test(tag)) continue
+    const dsh = (entry as { dsh?: unknown }).dsh
+    if (!Array.isArray(dsh) || !dsh.every((v): v is string => typeof v === 'string' && v !== '')) continue
+    map.set(tag, dsh)
+  }
+  return map.size > 0 ? map : undefined
+}
+
+function compatFromRaw(): Promise<Map<string, string[]> | undefined> {
+  if (compatCache !== undefined && Date.now() - compatCache.at < COMPAT_TTL_MS) return Promise.resolve(compatCache.map)
+  if (compatInflight !== undefined) return compatInflight
+  compatInflight = fetch(COMPAT_URL, { signal: AbortSignal.timeout(COMPAT_TIMEOUT_MS) })
+    .then(async (res): Promise<Map<string, string[]> | undefined> => (res.ok ? parseCompat(await res.json()) : undefined))
+    .catch(() => undefined)
+    .then((map) => { compatCache = { at: Date.now(), map }; compatInflight = undefined; return map })
+  return compatInflight
+}
+
 function isLinkInstall(): boolean {
   try {
     const p = resolve(dshHomePath('profiles', 'web', 'node_modules', '@dsh-external'), 'dsh-ui-whale')
@@ -97,7 +157,25 @@ export function registerUpdateEndpoint(ctx: Context): void {
   ctx.effect(() => {
     const latestDispose = ctx.webServer.register({
       kind: 'exact', path: LATEST_PATH,
-      handler: (_req, res) => { void latestFromGit().then((latest) => { const body = `${JSON.stringify({ latest: latest ?? null })}\n`; res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(body) }) },
+      handler: (_req, res) => {
+void Promise.all([latestFromGit(), compatFromRaw()]).then(([latest, compat]) => {
+            const dshVersion = detectDshVersion()
+            // Newest tag whose supported-DSH list contains the running DSH version;
+            // clamped to the newest tag the git remote actually knows (the raw CDN
+            // can lag behind a fresh push, and installing an unseen tag would fail).
+            let latestSupported: string | undefined
+            if (compat !== undefined && dshVersion !== undefined) {
+              for (const [tag, dsh] of compat) {
+                if (!dsh.includes(dshVersion)) continue
+                if (latestSupported === undefined || semverCompare(tag, latestSupported) > 0) latestSupported = tag
+              }
+              if (latestSupported !== undefined && latest !== undefined && semverCompare(latestSupported, latest) > 0) latestSupported = latest
+            }
+            const body = `${JSON.stringify({ latest: latest ?? null, dshVersion: dshVersion ?? null, latestSupported: latestSupported ?? null, compat: compat !== undefined })}\n`
+            res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' })
+            res.end(body)
+          })
+      },
     })
     const dispose = ctx.webServer.register({
       kind: 'exact', path: UPDATE_PATH,
