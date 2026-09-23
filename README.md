@@ -68,7 +68,8 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 
 | 插件版本 | DSH 快照 | 说明 |
 | --- | --- | --- |
-| `v0.3.20`（默认） | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.6-alpha.2`、`0.1.7-alpha.1`、`0.1.7-alpha.2` | **新增 DSH 版本门控更新提示**（舰队统一功能）；声明支持 dsh-v0.1.7-alpha.2；typecheck/41 单测/构建全绿 |
+| `v0.3.21`（默认） | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.7-alpha.2`、`0.1.7-rc.1` | 声明支持 dsh-v0.1.7-rc.1（舰队扫检零错误零崩溃，零适配改动） |
+| `v0.3.20` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.6-alpha.2`、`0.1.7-alpha.1`、`0.1.7-alpha.2` | **新增 DSH 版本门控更新提示**（舰队统一功能）；声明支持 dsh-v0.1.7-alpha.2；typecheck/41 单测/构建全绿 |
 | `v0.3.19` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.6-alpha.1` | 声明支持 dsh-v0.1.6-alpha.1（npm 已发布，钉版本实机验证；client 插件面零代码差异，typecheck/34 单测全绿，热挂载实机验证） |
 | `v0.3.18` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.5-rc.2` | 声明支持 0.1.5-rc.1~rc.2（npm 已发布，钉版本实机验证；rc.1 为 0.1.5 系列首个候选版本，client 插件面零代码差异；typecheck/build/34 单测全绿，热挂载实机验证） |
 | `v0.3.17` | `dsh-v0.1.2-alpha.1`~`alpha.5`、`rc.1`、`0.1.3-alpha.1`~`0.1.5-alpha.2` | 声明支持 0.1.5-alpha.2（npm 已发布，钉版本实机验证；alpha.2 改动为 Sidebar 文档预览、模型文件交付、minimal 默认工具调整与 `fs-ext` 安装修复，client 插件面零代码差异；typecheck/build/34 单测全绿，启动清单确认加载） |
