@@ -16,7 +16,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 > **你的 DSH 版本决定装哪个插件版本**（装错会崩：常见症状 `useConversation is not a function`）
 >
-> - DSH **0.1.2-alpha.1 ~ 0.2.0-rc.2**：装**新版**（下方默认命令；各 DSH 版本对应的插件 tag 见[版本对应表](#版本对应--version-compatibility)）
+> - DSH **0.1.2-alpha.1 ~ 0.2.1-alpha.1**：装**新版**（下方默认命令；各 DSH 版本对应的插件 tag 见[版本对应表](#版本对应--version-compatibility)）
 > - 更旧的 DSH（0.1.1-rc.2 及以前）：**无可用版本**
 >
 
@@ -24,7 +24,7 @@ DSH Web UI 的常驻像素鲸鱼伙伴插件：会话标题栏（标题行右侧
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-ui-whale）
-dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.24'
+dsh plugin --profile web add '@dsh-external/dsh-ui-whale@github:lhh010/dsh-ui-whale#v0.3.25'
 
 # 方式二：本地 link（开发）
 git clone https://github.com/lhh010/dsh-ui-whale.git
@@ -71,7 +71,8 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 
 | 插件版本 | DSH 快照 | 说明 |
 | --- | --- | --- |
-| `v0.3.24`（默认） | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1`、`0.1.7-rc.2`、`0.2.0-rc.1`、`0.2.0-rc.2` | 声明支持 dsh-v0.2.0-rc.2（升级实机验证：六插件挂载激活正常，零适配改动）；typecheck/41 单测/构建全绿 |
+| `v0.3.25`（默认） | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1`、`0.1.7-rc.2`、`0.2.0-rc.1`、`0.2.0-rc.2`、`0.2.1-alpha.1` | 声明支持 dsh-v0.2.1-alpha.1（升级实机验证：web 宿主七插件挂载激活正常，零适配改动）；typecheck/41 单测/构建全绿 |
+| `v0.3.24` | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1`、`0.1.7-rc.2`、`0.2.0-rc.1`、`0.2.0-rc.2` | 声明支持 dsh-v0.2.0-rc.2（升级实机验证：六插件挂载激活正常，零适配改动）；typecheck/41 单测/构建全绿 |
 | `v0.3.23` | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1`、`0.1.7-rc.2`、`0.2.0-rc.1` | 声明支持 dsh-v0.2.0-rc.1（升级实机验证：六插件挂载激活正常，零适配改动）；typecheck/41 单测/构建全绿 |
 | `v0.3.22` | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1`、`0.1.7-rc.2` | 声明支持 dsh-v0.1.7-rc.2（npm 升级实机验证：六插件挂载激活正常，零适配改动）；typecheck/41 单测/构建全绿 |
 | `v0.3.21` | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1` | 声明支持 dsh-v0.1.7-rc.1（舰队扫检零错误零崩溃，零适配改动） |
