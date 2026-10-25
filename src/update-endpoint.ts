@@ -8,9 +8,8 @@
  */
 import { execFile, spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
-import { realpathSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { existsSync, readFileSync, readdirSync, realpathSync } from 'node:fs'
+import { basename, dirname, join, resolve } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
 import type {} from '@deepseek-ai/dsh-host-webserver'
@@ -116,9 +115,52 @@ function compatFromRaw(): Promise<Map<string, string[]> | undefined> {
   return compatInflight
 }
 
+/**
+ * The profile directory that actually hosts this plugin.
+ *
+ * `profiles/web` is only the default for the CLI layout; a desktop install keeps
+ * its profile under `profiles/desktop`. Spawning with a `cwd` that does not exist
+ * fails as `spawn ...cmd.exe ENOENT`, so the directory is discovered instead of
+ * assumed.
+ */
+export function resolveProfileDir(): string {
+  const candidates = [process.cwd()]
+  try {
+    for (const entry of readdirSync(dshHomePath('profiles'))) candidates.push(dshHomePath('profiles', entry))
+  } catch { /* no profiles directory yet */ }
+  for (const dir of candidates) {
+    try {
+      if (existsSync(join(dir, 'node_modules', PACKAGE_SPEC, 'package.json'))) return dir
+    } catch { /* unreadable candidate */ }
+  }
+  for (const fallback of ['web', 'desktop']) {
+    const dir = dshHomePath('profiles', fallback)
+    if (existsSync(dir)) return dir
+  }
+  return dshHomePath('profiles', 'desktop')
+}
+
+/**
+ * Start pnpm for `cwd` without a shell, preferring the node/pnpm pair bundled with
+ * the desktop app. A shell spawn resolves `%ComSpec%` and inherits the cwd, which
+ * is what produced `spawn ...cmd.exe ENOENT`; the PATH lookup stays as a fallback
+ * for launches that are not the desktop app.
+ */
+function startPnpm(args: string[], cwd: string): ReturnType<typeof spawn> {
+  const appDir = dirname(process.execPath)
+  const pnpmEntry = join(appDir, 'resources', 'runtime', 'pnpm', 'bin', 'pnpm.mjs')
+  const bundledNode = join(appDir, 'resources', 'runtime', 'primary-runtime', 'dependencies', 'node', 'bin', 'node.exe')
+  if (existsSync(pnpmEntry)) {
+    if (existsSync(bundledNode)) return spawn(bundledNode, [pnpmEntry, ...args], { cwd })
+    // Electron can run the entry itself when no standalone node ships alongside it.
+    return spawn(process.execPath, [pnpmEntry, ...args], { cwd, env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' } })
+  }
+  return spawn('pnpm', args, { cwd, shell: true })
+}
+
 function isLinkInstall(): boolean {
   try {
-    const p = resolve(dshHomePath('profiles', 'web', 'node_modules', '@dsh-external'), 'dsh-ui-whale')
+    const p = resolve(resolveProfileDir(), 'node_modules', PACKAGE_SPEC)
     return realpathSync(p) !== resolve(p)
   } catch { return false }
 }
@@ -126,7 +168,7 @@ function isLinkInstall(): boolean {
 function runInstall(tag: string): Promise<{ ok: boolean; output: string; link: boolean }> {
   return new Promise((resolve) => {
     if (isLinkInstall()) { resolve({ ok: false, output: '', link: true }); return }
-    const child = spawn('pnpm', ['add', `${PACKAGE_SPEC}@github:${MIRROR}#${tag}`], { cwd: dshHomePath('profiles', 'web'), shell: true })
+    const child = startPnpm(['add', `${PACKAGE_SPEC}@github:${MIRROR}#${tag}`], resolveProfileDir())
     let output = ''
     let settled = false
     const settle = (value: { ok: boolean; output: string; link: boolean }): void => { if (settled) return; settled = true; resolve(value) }
@@ -146,9 +188,7 @@ function readBody(req: { on: (e: string, l: (c: Buffer) => void) => void }): Pro
  * an install so the client only asks for a dsh restart when the host half changed. */
 function hostBundleHash(): string | undefined {
   try {
-    const scopeDir = PACKAGE_SPEC.slice(0, PACKAGE_SPEC.indexOf('/'))
-    const pkgDir = PACKAGE_SPEC.slice(PACKAGE_SPEC.indexOf('/') + 1)
-    const p = resolve(dshHomePath('profiles', 'web', 'node_modules'), scopeDir, pkgDir, 'lib', 'index.js')
+    const p = resolve(resolveProfileDir(), 'node_modules', PACKAGE_SPEC, 'lib', 'index.js')
     return createHash('sha256').update(readFileSync(p)).digest('hex')
   } catch { return undefined }
 }
@@ -193,7 +233,7 @@ void Promise.all([latestFromGit(), compatFromRaw()]).then(([latest, compat]) => 
           if (typeof tag !== 'string' || !/^v\d+\.\d+\.\d+$/.test(tag)) { send(400, { ok: false, error: 'invalid tag' }); return }
           const hashBefore = hostBundleHash()
           const result = await runInstall(tag)
-          send(result.link ? 200 : (result.ok ? 200 : 500), { ok: result.ok, link: result.link, output: result.output.slice(-4000), tag, hostChanged: result.ok && hashBefore !== hostBundleHash(), ...(result.ok ? {} : { recovery: `dsh plugin --profile web add '${PACKAGE_SPEC}@github:${MIRROR}#${tag}'` }) })
+          send(result.link ? 200 : (result.ok ? 200 : 500), { ok: result.ok, link: result.link, output: result.output.slice(-4000), tag, hostChanged: result.ok && hashBefore !== hostBundleHash(), ...(result.ok ? {} : { recovery: `dsh plugin --profile ${basename(resolveProfileDir())} add '${PACKAGE_SPEC}@github:${MIRROR}#${tag}'` }) })
         } catch (e) { send(400, { ok: false, error: String((e as Error)?.message ?? e) }) }
       },
     })
