@@ -74,7 +74,12 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 
 | 插件版本 | DSH 快照 | 说明 |
 | --- | --- | --- |
-| `v0.3.31`（默认） | 与上一版相同 | 声明支持 dsh-v0.2.1-rc.1（0.2.1 系首个候选版，整合 alpha.1–5 全部插件面变更；升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务、无 alpha.5 之外的插件面破坏性变更；零适配改动）；双 bundle `node --check` 通过 |
+| `v0.3.36`（默认） | 与上一版相同 | 声明支持 dsh-v0.2.2-rc.1（舰队升级实机验证，零适配改动） |
+| `v0.3.35` | 与上一版相同 | 声明支持 dsh-v0.2.2-alpha.3（舰队契约巡检，零适配改动） |
+| `v0.3.34` | 与上一版相同 | 声明支持 dsh-v0.2.2-alpha.2（契约验证零适配：全部 slot/服务/remote API 存活） |
+| `v0.3.33` | 与上一版相同 | 声明支持 dsh-v0.2.1-rc.4（同步发版，零插件面差异） |
+| `v0.3.32` | 与上一版相同 | 声明式兼容 0.2.1-rc.2 / 0.2.1-rc.3 |
+| `v0.3.31` | 与上一版相同 | 声明支持 dsh-v0.2.1-rc.1（0.2.1 系首个候选版，整合 alpha.1–5 全部插件面变更；升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务、无 alpha.5 之外的插件面破坏性变更；零适配改动）；双 bundle `node --check` 通过 |
 | `v0.3.30` | 与上一版相同 | 声明支持 dsh-v0.2.1-alpha.5（升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务、无插件面破坏性变更——新增的 `conversation.input.model.label` Slot 为并列新增键，与本插件既有注入面（`conversation.input.for` / `conversation.input.dock` 等）无冲突；零适配改动）；双 bundle `node --check` 通过 |
 | `v0.3.29` | 与上一版相同 | 声明支持 dsh-v0.2.1-alpha.4（升级实机验证：web profile `--dump-config` 全插件行加载零错误；宿主保留 webStartup 服务、无插件面破坏性变更——新引入的 engines.dsh 兼容判定仅对声明者生效，本插件未声明故沿用原有规则；六插件零适配改动）；双 bundle `node --check` 通过 |
 | `v0.3.28` | 与上一版相同 | 声明支持 dsh-v0.2.1-alpha.3（升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务，六插件零适配改动）；双 bundle `node --check` 通过 |

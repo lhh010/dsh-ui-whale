@@ -51,7 +51,12 @@ Build artifacts are updated with each DSH snapshot; pick the version matching yo
 
 | Plugin version | DSH snapshot | Notes |
 | --- | --- | --- |
-| `v0.3.31` (default) | same as previous | Declare dsh-v0.2.1-rc.1 support (first release candidate of the 0.2.1 line, consolidating the alpha.1-5 plugin-plane changes; verified: web-profile --dump-config loads every plugin row with zero errors, read-only runtime probes green, the host keeps webStartup and ships no plugin-plane breaking change beyond alpha.5; zero adaptation) |
+| `v0.3.36` (default) | same as above | Declares dsh-v0.2.2-rc.1 (fleet upgrade verified, zero adaptation) |
+| `v0.3.35` | same as above | Declares dsh-v0.2.2-alpha.3 (fleet contract sweep, zero adaptation) |
+| `v0.3.34` | same as above | Declares dsh-v0.2.2-alpha.2 (contract-verified zero adaptation: all slots/services/remote APIs alive) |
+| `v0.3.33` | same as above | Declares dsh-v0.2.1-rc.4 (synchronization release, zero plugin-surface delta) |
+| `v0.3.32` | same as above | Declares 0.2.1-rc.2 / 0.2.1-rc.3 compatible |
+| `v0.3.31` | same as previous | Declare dsh-v0.2.1-rc.1 support (first release candidate of the 0.2.1 line, consolidating the alpha.1-5 plugin-plane changes; verified: web-profile --dump-config loads every plugin row with zero errors, read-only runtime probes green, the host keeps webStartup and ships no plugin-plane breaking change beyond alpha.5; zero adaptation) |
 | `v0.3.30` | same as previous | Declare dsh-v0.2.1-alpha.5 support (verified: web-profile --dump-config loads every plugin row with zero errors; read-only runtime probes green; the host keeps webStartup and ships no plugin-plane breaking change — the new conversation.input.model.label Slot is an additive sibling key that does not conflict with this plugin's existing injection surfaces; zero adaptation) |
 | `v0.3.29` | same as previous | Declare dsh-v0.2.1-alpha.4 support (verified: web-profile --dump-config loads every plugin row with zero errors; the host keeps webStartup and ships no plugin-plane breaking change — the new engines.dsh compatibility gate applies only to plugins that declare it, and this plugin does not; zero adaptation); both bundles pass node --check |
 | `v0.3.28` | same as previous | Declare dsh-v0.2.1-alpha.3 support (verified on the live host: `--dump-config` loads every plugin row with zero errors; read-only runtime probes show file-trace mermaid/katex routes 200 and the better-sidebar fence live; the host keeps the webStartup service — zero adaptation across the six plugins); both bundles pass `node --check` |
