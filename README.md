@@ -74,16 +74,16 @@ dsh plugin --profile web add link:/path/to/dsh-ui-whale
 
 | 插件版本 | DSH 快照 | 说明 |
 | --- | --- | --- |
-| `v0.3.36`（默认） | 与上一版相同 | 声明支持 dsh-v0.2.2-rc.1（舰队升级实机验证，零适配改动） |
-| `v0.3.35` | 与上一版相同 | 声明支持 dsh-v0.2.2-alpha.3（舰队契约巡检，零适配改动） |
-| `v0.3.34` | 与上一版相同 | 声明支持 dsh-v0.2.2-alpha.2（契约验证零适配：全部 slot/服务/remote API 存活） |
-| `v0.3.33` | 与上一版相同 | 声明支持 dsh-v0.2.1-rc.4（同步发版，零插件面差异） |
-| `v0.3.32` | 与上一版相同 | 声明式兼容 0.2.1-rc.2 / 0.2.1-rc.3 |
-| `v0.3.31` | 与上一版相同 | 声明支持 dsh-v0.2.1-rc.1（0.2.1 系首个候选版，整合 alpha.1–5 全部插件面变更；升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务、无 alpha.5 之外的插件面破坏性变更；零适配改动）；双 bundle `node --check` 通过 |
-| `v0.3.30` | 与上一版相同 | 声明支持 dsh-v0.2.1-alpha.5（升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务、无插件面破坏性变更——新增的 `conversation.input.model.label` Slot 为并列新增键，与本插件既有注入面（`conversation.input.for` / `conversation.input.dock` 等）无冲突；零适配改动）；双 bundle `node --check` 通过 |
-| `v0.3.29` | 与上一版相同 | 声明支持 dsh-v0.2.1-alpha.4（升级实机验证：web profile `--dump-config` 全插件行加载零错误；宿主保留 webStartup 服务、无插件面破坏性变更——新引入的 engines.dsh 兼容判定仅对声明者生效，本插件未声明故沿用原有规则；六插件零适配改动）；双 bundle `node --check` 通过 |
-| `v0.3.28` | 与上一版相同 | 声明支持 dsh-v0.2.1-alpha.3（升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务，六插件零适配改动）；双 bundle `node --check` 通过 |
-| `v0.3.27` | 与上一版相同 | **自带 bundle 声明**：补齐 `cordis.patch.yml` 并声明 `dsh.bundle.patch`——`dsh plugin --profile web add` 装完自动注册并挂载 profile 层，不再需要手写 insert 行（社区反馈「GUI 安装后不生效」的根因）；双 bundle `node --check` 通过 |
+| `v0.3.36`（默认） | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.2-rc.1`（其间全线） | 声明支持 dsh-v0.2.2-rc.1（舰队升级实机验证，零适配改动） |
+| `v0.3.35` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.2-alpha.3`（其间全线） | 声明支持 dsh-v0.2.2-alpha.3（舰队契约巡检，零适配改动） |
+| `v0.3.34` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.2-alpha.2`（其间全线） | 声明支持 dsh-v0.2.2-alpha.2（契约验证零适配：全部 slot/服务/remote API 存活） |
+| `v0.3.33` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.1-rc.4`（其间全线） | 声明支持 dsh-v0.2.1-rc.4（同步发版，零插件面差异） |
+| `v0.3.32` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.1-rc.3`（其间全线） | 声明式兼容 0.2.1-rc.2 / 0.2.1-rc.3 |
+| `v0.3.31` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.1-rc.1`（其间全线） | 声明支持 dsh-v0.2.1-rc.1（0.2.1 系首个候选版，整合 alpha.1–5 全部插件面变更；升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务、无 alpha.5 之外的插件面破坏性变更；零适配改动）；双 bundle `node --check` 通过 |
+| `v0.3.30` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.1-alpha.5`（其间全线） | 声明支持 dsh-v0.2.1-alpha.5（升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务、无插件面破坏性变更——新增的 `conversation.input.model.label` Slot 为并列新增键，与本插件既有注入面（`conversation.input.for` / `conversation.input.dock` 等）无冲突；零适配改动）；双 bundle `node --check` 通过 |
+| `v0.3.29` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.1-alpha.4`（其间全线） | 声明支持 dsh-v0.2.1-alpha.4（升级实机验证：web profile `--dump-config` 全插件行加载零错误；宿主保留 webStartup 服务、无插件面破坏性变更——新引入的 engines.dsh 兼容判定仅对声明者生效，本插件未声明故沿用原有规则；六插件零适配改动）；双 bundle `node --check` 通过 |
+| `v0.3.28` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.1-alpha.3`（其间全线） | 声明支持 dsh-v0.2.1-alpha.3（升级实机验证：web profile `--dump-config` 全插件行加载零错误；运行时只读探测 file-trace mermaid/katex 路由 200、better-sidebar fence 活；宿主保留 webStartup 服务，六插件零适配改动）；双 bundle `node --check` 通过 |
+| `v0.3.27` | `dsh-v0.1.2-alpha.1` ~ `dsh-v0.2.1-alpha.2`（其间全线） | **自带 bundle 声明**：补齐 `cordis.patch.yml` 并声明 `dsh.bundle.patch`——`dsh plugin --profile web add` 装完自动注册并挂载 profile 层，不再需要手写 insert 行（社区反馈「GUI 安装后不生效」的根因）；双 bundle `node --check` 通过 |
 | `v0.3.26` | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1`、`0.1.7-rc.2`、`0.2.0-rc.1`、`0.2.0-rc.2`、`0.2.1-alpha.1`、`0.2.1-alpha.2` | 声明支持 dsh-v0.2.1-alpha.2（升级实机验证：web profile `--dump-config` 全插件行加载、peer 校验零错误，宿主启动监听正常，零适配改动）；双 bundle `node --check` 通过 |
 | `v0.3.25` | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1`、`0.1.7-rc.2`、`0.2.0-rc.1`、`0.2.0-rc.2`、`0.2.1-alpha.1` | 声明支持 dsh-v0.2.1-alpha.1（升级实机验证：web 宿主七插件挂载激活正常，零适配改动）；typecheck/41 单测/构建全绿 |
 | `v0.3.24` | `dsh-v0.1.2-alpha.1 ~ alpha.5`、`rc.1`、`0.1.3-alpha.1 ~ 0.1.7-alpha.2`、`0.1.7-rc.1`、`0.1.7-rc.2`、`0.2.0-rc.1`、`0.2.0-rc.2` | 声明支持 dsh-v0.2.0-rc.2（升级实机验证：六插件挂载激活正常，零适配改动）；typecheck/41 单测/构建全绿 |
