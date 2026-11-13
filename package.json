@@ -9,6 +9,8 @@
     ".": "./lib/index.js",
     "./invariant": "./lib/invariant.js",
     "./client": "./lib/client.js",
+    "./locale/*": "./locale/*",
+    "./locale/*.json": "./locale/*.json",
     "./package.json": "./package.json"
   },
   "dsh": {
