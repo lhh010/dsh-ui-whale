@@ -28,7 +28,8 @@
   "files": [
     "lib",
     "src",
-    "cordis.patch.yml"
+    "cordis.patch.yml",
+    "locale"
   ],
   "scripts": {
     "build": "tsdown",
